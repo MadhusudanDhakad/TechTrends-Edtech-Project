@@ -1,6 +1,11 @@
 import axios from "axios";
 
-export const axiosInstance = axios.create({});
+export const axiosInstance = axios.create({
+  baseURL: process.env.REACT_APP_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
 export const apiConnector = (method, url, bodyData, headers, params) => {
   return axiosInstance({
