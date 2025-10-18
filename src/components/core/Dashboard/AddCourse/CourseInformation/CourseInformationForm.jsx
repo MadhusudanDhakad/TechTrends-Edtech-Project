@@ -136,6 +136,8 @@ export default function CourseInformationForm() {
       return
     }
 
+    console.log("courseImage: ", data.courseImage);
+
     const formData = new FormData()
     formData.append("courseName", data.courseTitle)
     formData.append("courseDescription", data.courseShortDesc)
@@ -145,31 +147,42 @@ export default function CourseInformationForm() {
     formData.append("category", data.courseCategory)
     formData.append("status", COURSE_STATUS.DRAFT)
     formData.append("instructions", JSON.stringify(data.courseRequirements))
+    console.log("Is error here")
     formData.append("thumbnailImage", data.courseImage)
     setLoading(true)
+    console.log("FormData: ", formData);
+    console.log("Token: ", token);
     const result = await addCourseDetails(formData, token)
+    console.log("After appending Thumbnail image")
     if (result) {
       dispatch(setStep(2))
       dispatch(setCourse(result))
     }
     setLoading(false)
+    
+
+    
+    for (let pair of formData.entries()) {
+      console.log(pair[0], pair[1])
+    }
   }
+
 
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="space-y-8 rounded-md border-[1px] border-richblack-700 bg-richblack-800 p-6"
+      className="space-y-6 sm:space-y-8 rounded-md border border-richblack-700 bg-richblack-800 p-4 sm:p-6 w-full max-w-[700px] mx-auto"
     >
       {/* Course Title */}
       <div className="flex flex-col space-y-2">
-        <label className="text-sm text-richblack-5" htmlFor="courseTitle">
+        <label className="text-xs sm:text-sm text-richblack-5" htmlFor="courseTitle">
           Course Title <sup className="text-pink-200">*</sup>
         </label>
         <input
           id="courseTitle"
           placeholder="Enter Course Title"
           {...register("courseTitle", { required: true })}
-          className="form-style w-full"
+          className="form-style w-full text-sm sm:text-base"
         />
         {errors.courseTitle && (
           <span className="ml-2 text-xs tracking-wide text-pink-200">
@@ -265,6 +278,7 @@ export default function CourseInformationForm() {
         setValue={setValue}
         errors={errors}
         editData={editCourse ? course?.thumbnail : null}
+        required={false}
       />             
       {/* Benefits of the course */}
       <div className="flex flex-col space-y-2">
@@ -293,7 +307,7 @@ export default function CourseInformationForm() {
         getValues={getValues}
       />
       {/* Next Button */}
-      <div className="flex justify-end gap-x-2">
+      <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-x-2 mt-4 sm:mt-6">
         {editCourse && (
           <button
             onClick={() => dispatch(setStep(2))}

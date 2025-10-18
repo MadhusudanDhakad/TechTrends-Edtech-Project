@@ -1,6 +1,9 @@
 // Import the required modules
 const express = require("express")
 const router = express.Router()
+// const multer = require("multer")
+// const upload = require("../middleware/multer")
+// const upload = multer({ storage: multer.memoryStorage() })
 
 // Import the Controllers
 
@@ -44,6 +47,7 @@ const {
   getAverageRating,
   getAllRatingReview,
 } = require("../controllers/RatingandReview")
+
 const {
   updateCourseProgress,
   getProgressPercentage,
@@ -51,12 +55,15 @@ const {
 // Importing Middlewares
 const { auth, isInstructor, isStudent, isAdmin } = require("../middleware/auth")
 
-// ********************************************************************************************************
-//                                      Course routes
-// ********************************************************************************************************
-
 // Courses can Only be Created by Instructors
-router.post("/createCourse", auth, isInstructor, createCourse)
+router.post(
+  "/createCourse", 
+  auth, 
+  isInstructor, 
+  // upload.single("thumbnailImage"), 
+  createCourse
+)
+
 // Edit Course routes
 router.post("/editCourse", auth, isInstructor, editCourse)
 //Add a Section to a Course
@@ -70,7 +77,14 @@ router.post("/updateSubSection", auth, isInstructor, updateSubSection)
 // Delete Sub Section
 router.post("/deleteSubSection", auth, isInstructor, deleteSubSection)
 // Add a Sub Section to a Section
-router.post("/addSubSection", auth, isInstructor, createSubSection)
+router.post(
+  "/addSubSection",
+  auth,
+  isInstructor, 
+  // upload.single("video"), 
+  createSubSection
+)
+
 // Get all Courses Under a Specific Instructor
 router.get("/getInstructorCourses", auth, isInstructor, getInstructorCourses)
 // Get all Registered Courses

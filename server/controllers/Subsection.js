@@ -8,7 +8,17 @@ exports.createSubSection = async (req, res) => {
   try {
     // Extract necessary information from the request body
     const { sectionId, title, description } = req.body
-    const video = req.files.video
+
+    // check if file exists
+    if (!req.files || !req.files.video) {
+      return res.status(400).json({
+        success: false,
+        message: "Video file is required",
+      })
+    }
+
+    const video = req.files?.video
+    // const video = req.file
 
     // Check if all necessary fields are provided
     if (!sectionId || !title || !description || !video) {
@@ -26,21 +36,29 @@ exports.createSubSection = async (req, res) => {
     console.log(uploadDetails)
     // Create a new sub-section with the necessary information
     const SubSectionDetails = await SubSection.create({
-      title: title,
-      timeDuration: `${uploadDetails.duration}`,
-      description: description,
+      // title: title,
+      title,
+      // description: description,
+      description, 
+      // videoUrl: uploadDetails.secure_url,
       videoUrl: uploadDetails.secure_url,
+      timeDuration: `${uploadDetails.duration}`,
     })
 
     // Update the corresponding section with the newly created sub-section
     const updatedSection = await Section.findByIdAndUpdate(
       { _id: sectionId },
+      // sectionId,
       { $push: { subSection: SubSectionDetails._id } },
       { new: true }
     ).populate("subSection")
 
     // Return the updated section in the response
-    return res.status(200).json({ success: true, data: updatedSection })
+    return res.status(200).json({ 
+      success: true, 
+      message: "Subsection created successfully",
+      data: updatedSection 
+    })
   } catch (error) {
     // Handle any errors that may occur during the process
     console.error("Error creating new sub-section:", error)

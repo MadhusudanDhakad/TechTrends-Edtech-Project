@@ -19,20 +19,22 @@ export default function ChipInput({
 
   // Setting up state for managing chips array
   const [chips, setChips] = useState([])
+  const [inputValue, setInputValue] = useState("")
 
   useEffect(() => {
-    if (editCourse) {
+    if (editCourse && course?.tag) {
       // console.log(course)
-      setChips(course?.tag)
+      setChips(course.tag)
+      setValue(name, course.tag)
     }
     register(name, { required: true, validate: (value) => value.length > 0 })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [register, editCourse, course, name, setValue])
 
   useEffect(() => {
     setValue(name, chips)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chips])
+  }, [chips, name, setValue])
 
   // Function to handle user input when chips are added
   const handleKeyDown = (event) => {
@@ -41,21 +43,23 @@ export default function ChipInput({
       // Prevent the default behavior of the event
       event.preventDefault()
       // Get the input value and remove any leading/trailing spaces
-      const chipValue = event.target.value.trim()
+      // const chipValue = event.target.value.trim()
+      const trimmedValue = inputValue.trim()
       // Check if the input value exists and is not already in the chips array
-      if (chipValue && !chips.includes(chipValue)) {
+      if (trimmedValue && !chips.includes(trimmedValue)) {
         // Add the chip to the array and clear the input
-        const newChips = [...chips, chipValue]
+        const newChips = [...chips, trimmedValue]
         setChips(newChips)
-        event.target.value = ""
+        // event.target.value = ""
+        setInputValue("")
       }
     }
   }
 
   // Function to handle deletion of a chip
-  const handleDeleteChip = (chipIndex) => {
+  const handleDeleteChip = (index) => {
     // Filter the chips array to remove the chip with the given index
-    const newChips = chips.filter((_, index) => index !== chipIndex)
+    const newChips = chips.filter((_, i) => i !== index)
     setChips(newChips)
   }
 
@@ -92,6 +96,8 @@ export default function ChipInput({
           name={name}
           type="text"
           placeholder={placeholder}
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
           className="form-style w-full"
         />

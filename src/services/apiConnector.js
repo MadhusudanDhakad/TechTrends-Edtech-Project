@@ -7,7 +7,12 @@ export const axiosInstance = axios.create({
   },
 });
 
-export const apiConnector = (method, url, bodyData, headers, params) => {
+export const apiConnector = (method, url, bodyData, headers = {}, params) => {
+
+  if (bodyData instanceof FormData) {
+    delete headers["Content-Type"];
+  }
+
   return axiosInstance({
     method: `${method}`,
     url: `${url}`,

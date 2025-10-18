@@ -38,6 +38,7 @@ function Navbar() {
 
   const [subLinks, setSubLinks] = useState([])
   const [loading, setLoading] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   useEffect(() => {
     ;(async () => {
@@ -160,9 +161,89 @@ function Navbar() {
           )}
           {token !== null && <ProfileDropdown />}
         </div>
-        <button className="mr-4 md:hidden">
+        {/* <button className="mr-4 md:hidden">
           <AiOutlineMenu fontSize={24} fill="#AFB2BF" />
+        </button> */}
+        {/* Mobile Menu Toggle Button */}
+        <button
+          className="mr-4 md:hidden"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+        >
+          {isMenuOpen ? (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="#AFB2BF"
+              className="w-6 h-6"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          ) : (
+            <AiOutlineMenu fontSize={24} fill="#AFB2BF" />
+          )}
         </button>
+
+        {/* Mobile Dropdown Menu */}
+        {isMenuOpen && (
+          <div className="absolute top-14 left-0 w-full bg-richblack-800 z-50 flex flex-col items-center space-y-4 py-6 md:hidden">
+            {NavbarLinks.map((link, index) => (
+              <div key={index} className="text-richblack-25">
+                {link.title === "Catalog" ? (
+                  <>
+                    <p className="font-semibold">{link.title}</p>
+                    {loading ? (
+                      <p>Loading...</p>
+                    ) : (
+                      subLinks.map((subLink, i) => (
+                        <Link
+                          key={i}
+                          to={`/catalog/${subLink.name.split(" ").join("-").toLowerCase()}`}
+                          onClick={() => setIsMenuOpen(false)}
+                          className="block py-2"
+                        >
+                          {subLink.name}
+                        </Link>
+                      ))
+                    )}
+                  </>
+                ) : (
+                  <Link
+                    to={link?.path}
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`${
+                      matchRoute(link?.path) ? "text-yellow-25" : "text-richblack-25"
+                    }`}
+                  >
+                    {link.title}
+                  </Link>
+                )}
+              </div>
+            ))}
+
+            {/* Auth Buttons */}
+            <div className="flex flex-col items-center space-y-3">
+              {token === null && (
+                <>
+                  <Link to="/login" onClick={() => setIsMenuOpen(false)}>
+                    <button className="rounded-md border border-richblack-700 bg-richblack-800 px-4 py-2 text-richblack-100">
+                      Log in
+                    </button>
+                  </Link>
+                  <Link to="/signup" onClick={() => setIsMenuOpen(false)}>
+                    <button className="rounded-md border border-richblack-700 bg-richblack-800 px-4 py-2 text-richblack-100">
+                      Sign up
+                    </button>
+                  </Link>
+                </>
+              )}
+              {token !== null && <ProfileDropdown />}
+            </div>
+          </div>
+        )}
+
+
       </div>
     </div>
   )

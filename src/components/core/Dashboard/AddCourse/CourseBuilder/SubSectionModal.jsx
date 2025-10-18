@@ -65,7 +65,7 @@ export default function SubSectionModal({
     // console.log("changes after editing form values:", currentValues)
     const formData = new FormData()
     // console.log("Values After Editing form values:", currentValues)
-    formData.append("sectionId", modalData.sectionId)
+    formData.append("sectionId", modalData.sectionId || modalData._id)
     formData.append("subSectionId", modalData._id)
     if (currentValues.lectureTitle !== modalData.title) {
       formData.append("title", currentValues.lectureTitle)
@@ -82,7 +82,7 @@ export default function SubSectionModal({
       // console.log("result", result)
       // update the structure of course
       const updatedCourseContent = course.courseContent.map((section) =>
-        section._id === modalData.sectionId ? result : section
+        section._id === (modalData.sectionId || modalData._id) ? result : section
       )
       const updatedCourse = { ...course, courseContent: updatedCourseContent }
       dispatch(setCourse(updatedCourse))
@@ -104,21 +104,53 @@ export default function SubSectionModal({
       return
     }
 
+
+    let sectionId = null
+
+    if (!modalData) {
+      toast.error("Invalid section. Please try again.")
+      return 
+    }
+
+    if (typeof modalData === "string") {
+      sectionId = modalData 
+    } else if (typeof modalData === "object" && modalData._id) {
+      sectionId = modalData._id 
+    } else {
+      toast.error("Invalid section. Please try again.")
+      return
+    }
+
     const formData = new FormData()
-    formData.append("sectionId", modalData)
+    // formData.append("sectionId", modalData)
+    formData.append("sectionId", sectionId)
     formData.append("title", data.lectureTitle)
     formData.append("description", data.lectureDesc)
-    formData.append("video", data.lectureVideo)
+    // formData.append("video", data.lectureVideo)
+    if (data.lectureVideo && typeof data.lectureVideo !== "string") {
+      formData.append("video", data.lectureVideo);
+    } else {
+      toast.error("Please upload a valid video file");
+      return;
+    }
+
     setLoading(true)
+
+    console.log("FormData before  sending: ");
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
+
     const result = await createSubSection(formData, token)
     if (result) {
       // update the structure of course
       const updatedCourseContent = course.courseContent.map((section) =>
-        section._id === modalData ? result : section
+        section._id === sectionId ? result : section
       )
       const updatedCourse = { ...course, courseContent: updatedCourseContent }
       dispatch(setCourse(updatedCourse))
     }
+
     setModalData(null)
     setLoading(false)
   }

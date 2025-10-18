@@ -88,7 +88,7 @@ export const addCourseDetails = async (data, token) => {
   const toastId = toast.loading("Loading...")
   try {
     const response = await apiConnector("POST", CREATE_COURSE_API, data, {
-      "Content-Type": "multipart/form-data",
+      // "Content-Type": "multipart/form-data",
       Authorization: `Bearer ${token}`,
     })
     console.log("CREATE COURSE API RESPONSE............", response)
@@ -111,7 +111,7 @@ export const editCourseDetails = async (data, token) => {
   const toastId = toast.loading("Loading...")
   try {
     const response = await apiConnector("POST", EDIT_COURSE_API, data, {
-      "Content-Type": "multipart/form-data",
+      // "Content-Type": "multipart/form-data",
       Authorization: `Bearer ${token}`,
     })
     console.log("EDIT COURSE API RESPONSE............", response)
@@ -152,21 +152,22 @@ export const createSection = async (data, token) => {
 
 // create a subsection
 export const createSubSection = async (data, token) => {
+  const toastId = toast.loading("Adding Lecture...")
   let result = null
-  const toastId = toast.loading("Loading...")
   try {
     const response = await apiConnector("POST", CREATE_SUBSECTION_API, data, {
       Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
     })
     console.log("CREATE SUB-SECTION API RESPONSE............", response)
     if (!response?.data?.success) {
       throw new Error("Could Not Add Lecture")
     }
-    toast.success("Lecture Added")
-    result = response?.data?.data
+    toast.success("Lecture Added Successfully")
+    result = response.data.data
   } catch (error) {
     console.log("CREATE SUB-SECTION API ERROR............", error)
-    toast.error(error.message)
+    toast.error(error?.response?.data?.message || error.message)
   }
   toast.dismiss(toastId)
   return result
@@ -378,6 +379,7 @@ export const createRating = async (data, token) => {
     }
     toast.success("Rating Created")
     success = true
+    return response.data
   } catch (error) {
     success = false
     console.log("CREATE RATING API ERROR............", error)

@@ -25,7 +25,13 @@ exports.createCourse = async (req, res) => {
       instructions: _instructions,
     } = req.body
     // Get thumbnail image from request files
-    const thumbnail = req.files.thumbnailImage
+    const thumbnail = req.files?.thumbnailImage
+
+    
+    // const thumbnail = req.file;
+    
+    console.log("req.file: ", req.file);
+    console.log("req.files: ", req.files);
 
     // Convert the tag and instructions from stringified Array to Array
     const tag = JSON.parse(_tag)
@@ -34,6 +40,21 @@ exports.createCourse = async (req, res) => {
     console.log("tag", tag)
     console.log("instructions", instructions)
 
+
+
+    // Debugging steps
+    console.log("🧾 courseName:", courseName)
+    console.log("🧾 courseDescription:", courseDescription)
+    console.log("🧾 whatYouWillLearn:", whatYouWillLearn)
+    console.log("🧾 price:", price)
+    console.log("🧾 tag:", tag)
+    console.log("🧾 category:", category)
+    console.log("🧾 instructions:", instructions)
+    console.log("🧾 thumbnail:", thumbnail)
+
+
+
+
     // Check if any of the required fields are missing
     if (
       !courseName ||
@@ -41,7 +62,7 @@ exports.createCourse = async (req, res) => {
       !whatYouWillLearn ||
       !price ||
       !tag.length ||
-      !thumbnail ||
+      // !thumbnail ||
       !category ||
       !instructions.length
     ) {
@@ -132,6 +153,7 @@ exports.createCourse = async (req, res) => {
     })
   }
 }
+
 // Edit Course Details
 exports.editCourse = async (req, res) => {
   try {
@@ -146,7 +168,8 @@ exports.editCourse = async (req, res) => {
     // If Thumbnail Image is found, update it
     if (req.files) {
       console.log("thumbnail update")
-      const thumbnail = req.files.thumbnailImage
+      const thumbnail = req.files?.thumbnailImage
+      // const thumbnail = req.file
       const thumbnailImage = await uploadImageToCloudinary(
         thumbnail,
         process.env.FOLDER_NAME
