@@ -43,12 +43,19 @@ export default function EditCourse() {
         Edit Course
       </h1>
       <div className="mx-auto max-w-[600px]">
-        {course ? (
+        {/* {course ? (
           <RenderSteps />
         ) : (
           <p className="mt-14 text-center text-3xl font-semibold text-richblack-100">
             Course not found
           </p>
+        )} */}
+        {course ? (
+          <p className="mt-14 text-center text-3xl font-semibold text-richblack-100">
+            Course not found
+          </p>
+        ): (
+          <RenderSteps />
         )}
       </div>
     </div>

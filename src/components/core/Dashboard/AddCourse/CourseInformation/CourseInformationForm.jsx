@@ -160,6 +160,7 @@ export default function CourseInformationForm() {
     }
     setLoading(false)
     
+    console.log("courseImage: ", data.courseImage);
 
     
     for (let pair of formData.entries()) {
