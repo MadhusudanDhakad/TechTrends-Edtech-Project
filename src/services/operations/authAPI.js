@@ -144,7 +144,7 @@ export function getPasswordResetToken(email, setEmailSent) {
 export function resetPassword(password, confirmPassword, token, navigate) {
   return async (dispatch) => {
     const toastId = toast.loading("Resetting Password...")
-    dispatch(setLoading(true))
+    // dispatch(setLoading(true))
     try {
       // new update
       const body = { password, confirmPassword, token }
@@ -166,22 +166,22 @@ export function resetPassword(password, confirmPassword, token, navigate) {
       }
 
       toast.success(response.data.message || "Password Reset Successfully")
-      navigate("/login")
+      if (navigate) navigate("/login")
       // new update
-      return { success: true, data: response.data }
+      // return { success: true, data: response.data }
     } catch (err) {
       console.log("RESETPASSWORD ERROR............", err)
 
       // new update
       const msg = err?.response?.data?.message || err?.message || "Something went wrong while resetting password"
 
-      toast.error("Failed To Reset Password")
+      toast.error(msg)
       // new update
-      return { success: false, error: msg }
+      // return { success: false, error: msg }
     } finally {
       // new update
         toast.dismiss(toastId)
-        dispatch(setLoading(false))
+        // dispatch(setLoading(false))
       }
       // toast.dismiss(toastId)
   }
@@ -198,6 +198,7 @@ export function logout(navigate) {
     navigate("/")
   }
 }
+
 
 
 
