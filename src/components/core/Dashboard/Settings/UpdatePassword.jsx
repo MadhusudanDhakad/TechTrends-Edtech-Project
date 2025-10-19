@@ -1,203 +1,145 @@
+import { useState } from "react"
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai"
+import { BiArrowBack } from "react-icons/bi"
+import { useDispatch, useSelector } from "react-redux"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { toast } from "react-hot-toast"
-import { setLoading, setToken } from "../../slices/authSlice"
-import { resetCart } from "../../slices/cartSlice"
-import { setUser } from "../../slices/profileSlice"
-import { apiConnector } from "../apiConnector"
-import { endpoints } from "../apis"
+import { resetPassword } from "../services/operations/authAPI"
+// new update
+// import { resetPasswordAPI } from "../services/operations/authAPI"
 
-const {
-  SENDOTP_API,
-  SIGNUP_API,
-  LOGIN_API,
-  RESETPASSTOKEN_API,
-  RESETPASSWORD_API,
-} = endpoints
+function UpdatePassword() {
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const location = useLocation()
+  const { loading } = useSelector((state) => state.auth)
+  const [formData, setFormData] = useState({
+    password: "",
+    confirmPassword: "",
+  })
 
-export function sendOtp(email, navigate) {
-  return async (dispatch) => {
-    const toastId = toast.loading("Loading...")
-    dispatch(setLoading(true))
-    try {
-      const response = await apiConnector("POST", SENDOTP_API, {
-        email,
-        checkUserPresent: true,
-      })
-      console.log("SENDOTP API RESPONSE............", response)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
-      console.log(response.data.success)
+  const { password, confirmPassword } = formData
 
-      if (!response.data.success) {
-        throw new Error(response.data.message)
-      }
-
-      toast.success("OTP Sent Successfully")
-      navigate("/verify-email")
-    } catch (error) {
-      console.log("SENDOTP API ERROR............", error)
-      toast.error("Could Not Send OTP")
-    }
-    dispatch(setLoading(false))
-    toast.dismiss(toastId)
+  const handleOnChange = (e) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      [e.target.name]: e.target.value,
+    }))
   }
-}
 
-export function signUp(
-  accountType,
-  firstName,
-  lastName,
-  email,
-  password,
-  confirmPassword,
-  otp,
-  navigate
-) {
-  return async (dispatch) => {
-    const toastId = toast.loading("Loading...")
-    dispatch(setLoading(true))
-    try {
-      const response = await apiConnector("POST", SIGNUP_API, {
-        accountType,
-        firstName,
-        lastName,
-        email,
-        password,
-        confirmPassword,
-        otp,
-      })
+  const handleOnSubmit = async (e) => {
+    e.preventDefault()
 
-      console.log("SIGNUP API RESPONSE............", response)
 
-      if (!response.data.success) {
-        throw new Error(response.data.message)
-      }
-      toast.success("Signup Successful")
+    // New update 
+    if (!password || !confirmPassword) {
+      toast.error("Pelase fill both password fields") 
+      return 
+    }
+    if (password !== confirmPassword) {
+      toast.error("Password and Confirm Password do not match")
+      return
+    }
+
+
+    const token = location.pathname.split("/").at(-1)
+    // new update
+    const result = await resetPassword( {password, confirmPassword, token} )
+    if (result.success) {
       navigate("/login")
-    } catch (error) {
-      console.log("SIGNUP API ERROR............", error)
-      toast.error("Signup Failed")
-      navigate("/signup")
     }
-    dispatch(setLoading(false))
-    toast.dismiss(toastId)
+    dispatch(resetPassword(password, confirmPassword, token, navigate))
   }
+
+  return (
+    <div className="grid min-h-[calc(100vh-3.5rem)] place-items-center">
+      {loading ? (
+        <div className="spinner"></div>
+      ) : (
+        <div className="max-w-[500px] p-4 lg:p-8">
+          <h1 className="text-[1.875rem] font-semibold leading-[2.375rem] text-richblack-5">
+            Choose new password
+          </h1>
+          <p className="my-4 text-[1.125rem] leading-[1.625rem] text-richblack-100">
+            Almost done. Enter your new password and youre all set.
+          </p>
+          <form onSubmit={handleOnSubmit}>
+            <label className="relative">
+              <p className="mb-1 text-[0.875rem] leading-[1.375rem] text-richblack-5">
+                New Password <sup className="text-pink-200">*</sup>
+              </p>
+              <input
+                required
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={password}
+                onChange={handleOnChange}
+                placeholder="Enter Password"
+                className="form-style w-full !pr-10"
+              />
+              <span
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-3 top-[38px] z-[10] cursor-pointer"
+              >
+                {showPassword ? (
+                  <AiOutlineEyeInvisible fontSize={24} fill="#AFB2BF" />
+                ) : (
+                  <AiOutlineEye fontSize={24} fill="#AFB2BF" />
+                )}
+              </span>
+            </label>
+            <label className="relative mt-3 block">
+              <p className="mb-1 text-[0.875rem] leading-[1.375rem] text-richblack-5">
+                Confirm New Password <sup className="text-pink-200">*</sup>
+              </p>
+              <input
+                required
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirmPassword"
+                value={confirmPassword}
+                onChange={handleOnChange}
+                placeholder="Confirm Password"
+                className="form-style w-full !pr-10"
+              />
+              <span
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+                className="absolute right-3 top-[38px] z-[10] cursor-pointer"
+              >
+                {showConfirmPassword ? (
+                  <AiOutlineEyeInvisible fontSize={24} fill="#AFB2BF" />
+                ) : (
+                  <AiOutlineEye fontSize={24} fill="#AFB2BF" />
+                )}
+              </span>
+            </label>
+
+            <button
+              type="submit"
+              className="mt-6 w-full rounded-[8px] bg-yellow-50 py-[12px] px-[12px] font-medium text-richblack-900"
+            >
+              Reset Password
+            </button>
+          </form>
+          <div className="mt-6 flex items-center justify-between">
+            <Link to="/login">
+              <p className="flex items-center gap-x-2 text-richblack-5">
+                <BiArrowBack /> Back To Login
+              </p>
+            </Link>
+          </div>
+        </div>
+      )}
+    </div>
+  )
 }
 
-export function login(email, password, navigate) {
-  return async (dispatch) => {
-    const toastId = toast.loading("Loading...")
-    dispatch(setLoading(true))
-    try {
-      const response = await apiConnector("POST", LOGIN_API, {
-        email,
-        password,
-      })
-
-      console.log("LOGIN API RESPONSE............", response)
-
-      if (!response.data.success) {
-        throw new Error(response.data.message)
-      }
-
-      toast.success("Login Successful")
-      dispatch(setToken(response.data.token))
-      const userImage = response.data?.user?.image
-        ? response.data.user.image
-        : `https://api.dicebear.com/5.x/initials/svg?seed=${response.data.user.firstName} ${response.data.user.lastName}`
-      dispatch(setUser({ ...response.data.user, image: userImage }))
-      localStorage.setItem("token", JSON.stringify(response.data.token))
-      navigate("/dashboard/my-profile")
-    } catch (error) {
-      console.log("LOGIN API ERROR............", error)
-      toast.error("Login Failed")
-    }
-    dispatch(setLoading(false))
-    toast.dismiss(toastId)
-  }
-}
-
-export function getPasswordResetToken(email, setEmailSent) {
-  return async (dispatch) => {
-    const toastId = toast.loading("Loading...")
-    dispatch(setLoading(true))
-    try {
-      const response = await apiConnector("POST", RESETPASSTOKEN_API, {
-        email,
-      })
-
-      console.log("RESETPASSTOKEN RESPONSE............", response)
-
-      if (!response.data.success) {
-        throw new Error(response.data.message)
-      }
-
-      toast.success("Reset Email Sent")
-      setEmailSent(true)
-    } catch (error) {
-      console.log("RESETPASSTOKEN ERROR............", error)
-      toast.error("Failed To Send Reset Email")
-    }
-    toast.dismiss(toastId)
-    dispatch(setLoading(false))
-  }
-}
-
-export function resetPassword(password, confirmPassword, token, navigate) {
-  return async (dispatch) => {
-    const toastId = toast.loading("Resetting Password...")
-    // dispatch(setLoading(true))
-    try {
-      // new update
-      const body = { password, confirmPassword, token }
+export default UpdatePassword
 
 
-      // const response = await apiConnector("POST", RESETPASSWORD_API, {
-      //   password,
-      //   confirmPassword,
-      //   token,
-      // })
 
-      // new update 
-      const response = await apiConnector("POST", endpoints.RESETPASSTOKEN_API, body)
-
-      console.log("RESETPASSWORD RESPONSE............", response)
-
-      if (!response?.data?.success) {
-        throw new Error(response?.data?.message || "Failed to reset password")
-      }
-
-      toast.success(response.data.message || "Password Reset Successfully")
-      if (navigate) navigate("/login")
-      // new update
-      // return { success: true, data: response.data }
-    } catch (err) {
-      console.log("RESETPASSWORD ERROR............", err)
-
-      // new update
-      const msg = err?.response?.data?.message || err?.message || "Something went wrong while resetting password"
-
-      toast.error(msg)
-      // new update
-      // return { success: false, error: msg }
-    } finally {
-      // new update
-        toast.dismiss(toastId)
-        // dispatch(setLoading(false))
-      }
-      // toast.dismiss(toastId)
-  }
-}
-
-export function logout(navigate) {
-  return (dispatch) => {
-    dispatch(setToken(null))
-    dispatch(setUser(null))
-    dispatch(resetCart())
-    localStorage.removeItem("token")
-    localStorage.removeItem("user")
-    toast.success("Logged Out")
-    navigate("/")
-  }
-}
 
 
 
