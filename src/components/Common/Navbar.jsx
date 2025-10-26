@@ -165,6 +165,7 @@ function Navbar() {
           <AiOutlineMenu fontSize={24} fill="#AFB2BF" />
         </button> */}
         {/* Mobile Menu Toggle Button */}
+        {/* Mobile Menu Toggle Button */}
         <button
           className="mr-4 md:hidden"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -184,47 +185,72 @@ function Navbar() {
             <AiOutlineMenu fontSize={24} fill="#AFB2BF" />
           )}
         </button>
-
+        
         {/* Mobile Dropdown Menu */}
         {isMenuOpen && (
           <div className="absolute top-14 left-0 w-full bg-richblack-800 z-50 flex flex-col items-center space-y-4 py-6 md:hidden">
-            {NavbarLinks.map((link, index) => (
-              <div key={index} className="text-richblack-25">
-                {link.title === "Catalog" ? (
-                  <>
-                    <p className="font-semibold">{link.title}</p>
-                    {loading ? (
-                      <p>Loading...</p>
-                    ) : (
-                      subLinks.map((subLink, i) => (
-                        <Link
-                          key={i}
-                          to={`/catalog/${subLink.name.split(" ").join("-").toLowerCase()}`}
-                          onClick={() => setIsMenuOpen(false)}
-                          className="block py-2"
-                        >
-                          {subLink.name}
-                        </Link>
-                      ))
-                    )}
-                  </>
-                ) : (
-                  <Link
-                    to={link?.path}
-                    onClick={() => setIsMenuOpen(false)}
-                    className={`${
-                      matchRoute(link?.path) ? "text-yellow-25" : "text-richblack-25"
-                    }`}
-                  >
-                    {link.title}
-                  </Link>
-                )}
-              </div>
-            ))}
-
+        
+            {/* 🔹 Added local state for Catalog toggle */}
+            {NavbarLinks.map((link, index) => {
+              const isCatalog = link.title === "Catalog"
+              return (
+                <div key={index} className="text-richblack-25 w-full text-center">
+                  {isCatalog ? (
+                    <>
+                      {/* 🔹 Catalog Button */}
+                      <button
+                        onClick={() => setIsCatalogOpen((prev) => !prev)} // toggle sublinks
+                        className="font-semibold w-full text-center py-2 hover:text-yellow-25"
+                      >
+                        {link.title}
+                        <span className="ml-2">
+                          {isCatalogOpen ? "▲" : "▼"}
+                        </span>
+                      </button>
+        
+                      {/* 🔹 Catalog Dropdown (only visible when open) */}
+                      {isCatalogOpen && (
+                        <div className="flex flex-col items-center mt-2 space-y-2">
+                          {loading ? (
+                            <p>Loading...</p>
+                          ) : (
+                            subLinks.map((subLink, i) => (
+                              <Link
+                                key={i}
+                                to={`/catalog/${subLink.name
+                                  .split(" ")
+                                  .join("-")
+                                  .toLowerCase()}`}
+                                onClick={() => setIsMenuOpen(false)}
+                                className="block py-1 text-richblack-100 hover:text-yellow-25"
+                              >
+                                {subLink.name}
+                              </Link>
+                            ))
+                          )}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <Link
+                      to={link?.path}
+                      onClick={() => setIsMenuOpen(false)}
+                      className={`${
+                        matchRoute(link?.path)
+                          ? "text-yellow-25"
+                          : "text-richblack-25"
+                      }`}
+                    >
+                      {link.title}
+                    </Link>
+                  )}
+                </div>
+              )
+            })}
+        
             {/* Auth Buttons */}
-            <div className="flex flex-col items-center space-y-3">
-              {token === null && (
+            <div className="flex flex-col items-center space-y-3 mt-4">
+              {token === null ? (
                 <>
                   <Link to="/login" onClick={() => setIsMenuOpen(false)}>
                     <button className="rounded-md border border-richblack-700 bg-richblack-800 px-4 py-2 text-richblack-100">
@@ -237,11 +263,13 @@ function Navbar() {
                     </button>
                   </Link>
                 </>
+              ) : (
+                <ProfileDropdown />
               )}
-              {token !== null && <ProfileDropdown />}
             </div>
           </div>
         )}
+
 
 
       </div>
