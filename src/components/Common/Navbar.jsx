@@ -39,6 +39,7 @@ function Navbar() {
   const [subLinks, setSubLinks] = useState([])
   const [loading, setLoading] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isCatalogOpen, setIsCatalogOpen] = useState(false)
 
   useEffect(() => {
     ;(async () => {
