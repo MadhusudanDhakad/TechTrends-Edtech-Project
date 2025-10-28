@@ -35,17 +35,24 @@ export async function BuyCourse(
   navigate,
   dispatch
 ) {
+
+  console.log("Calling COURSE_PAYMENT_API:", COURSE_PAYMENT_API)
+  console.log("Token:", token ? "✅ Exists" : "❌ Missing")
+  console.log("Courses sent:", courses)
+
+
   const toastId = toast.loading("Loading...")
   try {
-    // Loading the script of Razorpay SDK
-    const res = await loadScript("https://checkout.razorpay.com/v1/checkout.js")
 
-    if (!res) {
-      toast.error(
-        "Razorpay SDK failed to load. Check your Internet Connection."
-      )
-      return
-    }
+    // Loading the script of Razorpay SDK
+    // const res = await loadScript("https://checkout.razorpay.com/v1/checkout.js")
+
+    // if (!res) {
+    //   toast.error(
+    //     "Razorpay SDK failed to load. Check your Internet Connection."
+    //   )
+    //   return
+    // }
 
     // Initiating the Order in Backend
     const orderResponse = await apiConnector(
@@ -66,11 +73,11 @@ export async function BuyCourse(
 
     // Opening the Razorpay SDK
     const options = {
-      key: process.env.RAZORPAY_KEY,
+      key: process.env.REACT_APP_RAZORPAY_KEY,
       currency: orderResponse.data.data.currency,
       amount: `${orderResponse.data.data.amount}`,
       order_id: orderResponse.data.data.id,
-      name: "StudyNotion",
+      name: "TechTrends Learning",
       description: "Thank you for Purchasing the Course.",
       image: rzpLogo,
       prefill: {

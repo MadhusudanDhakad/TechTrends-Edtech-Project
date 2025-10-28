@@ -23,6 +23,9 @@ function UpdatePassword() {
 
   const { password, confirmPassword } = formData
 
+  console.log("password: ", password);
+  console.log("confirmPassword: ", confirmPassword);
+
   const handleOnChange = (e) => {
     setFormData((prevData) => ({
       ...prevData,

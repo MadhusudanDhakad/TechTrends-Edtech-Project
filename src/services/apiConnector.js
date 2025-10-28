@@ -2,23 +2,25 @@ import axios from "axios";
 
 export const axiosInstance = axios.create({
   baseURL: process.env.REACT_APP_BASE_URL,
-  headers: {
-    // "Content-Type": "application/json",
-    "Content-Type": "multipart/form-data",
-  },
 });
 
+// function to handle both JSON and FormData
 export const apiConnector = (method, url, bodyData, headers = {}, params) => {
+  let contentType = "application/json";
 
+  // if bodyData is FormData → switch content type
   if (bodyData instanceof FormData) {
-    delete headers["Content-Type"];
+    contentType = "multipart/form-data";
   }
 
   return axiosInstance({
-    method: `${method}`,
-    url: `${url}`,
-    data: bodyData ? bodyData : null,
-    headers: headers ? headers : null,
-    params: params ? params : null,
+    method,
+    url,
+    data: bodyData || null,
+    headers: {
+      "Content-Type": contentType,
+      ...headers,
+    },
+    params: params || null,
   });
 };

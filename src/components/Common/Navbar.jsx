@@ -108,6 +108,7 @@ function Navbar() {
                                   key={i}
                                 >
                                   <p>{subLink.name}</p>
+                                  {/* {console.log(`sublink: ${subLink.name}`)} */}
                                 </Link>
                               ))}
                           </>
@@ -186,11 +187,11 @@ function Navbar() {
             <AiOutlineMenu fontSize={24} fill="#AFB2BF" />
           )}
         </button>
-        
+
         {/* Mobile Dropdown Menu */}
         {isMenuOpen && (
           <div className="absolute top-14 left-0 w-full bg-richblack-800 z-50 flex flex-col items-center space-y-4 py-6 md:hidden">
-        
+
             {/* 🔹 Added local state for Catalog toggle */}
             {NavbarLinks.map((link, index) => {
               const isCatalog = link.title === "Catalog"
@@ -208,14 +209,14 @@ function Navbar() {
                           {isCatalogOpen ? "▲" : "▼"}
                         </span>
                       </button>
-        
+
                       {/* 🔹 Catalog Dropdown (only visible when open) */}
                       {isCatalogOpen && (
-                        <div className="flex flex-col items-center mt-2 space-y-2">
+                        <div className="flex flex-col text-center mt-2 space-y-2 font-thin hover:text-yellow-50">
                           {loading ? (
                             <p>Loading...</p>
                           ) : (
-                            subLinks.map((subLink, i) => (
+                            subLinks?.filter((subLink) => subLink?.courses && subLink?.courses.length > 0)?.map((subLink, i) => (
                               <Link
                                 key={i}
                                 to={`/catalog/${subLink.name
@@ -248,7 +249,7 @@ function Navbar() {
                 </div>
               )
             })}
-        
+
             {/* Auth Buttons */}
             <div className="flex flex-col items-center space-y-3 mt-4">
               {token === null ? (
@@ -265,12 +266,12 @@ function Navbar() {
                   </Link>
                 </>
               ) : (
-                <ProfileDropdown />
+                // <ProfileDropdown />
+                <ProfileDropdown closeMobileMenu={() => setIsMenuOpen(false)} />
               )}
             </div>
           </div>
         )}
-
 
 
       </div>

@@ -25,27 +25,80 @@ const VideoDetails = () => {
   const [videoEnded, setVideoEnded] = useState(false)
   const [loading, setLoading] = useState(false)
 
+  // useEffect(() => {
+  //   ;(async () => {
+  //     if (!courseSectionData.length) return
+
+  //     if (!courseId && !sectionId && !subSectionId) {
+  //       navigate(`/dashboard/enrolled-courses`)
+  //     } else {
+  //       // console.log("courseSectionData", courseSectionData)
+  //       const filteredData = courseSectionData.filter(
+  //         (course) => course._id === sectionId
+  //       )
+  //       // console.log("filteredData", filteredData)
+  //       const filteredVideoData = filteredData?.[0]?.subSection.filter(
+  //         (data) => data._id === subSectionId
+  //       )
+  //       // console.log("filteredVideoData", filteredVideoData)
+  //       setVideoData(filteredVideoData[0])
+  //       setPreviewSource(courseEntireData.thumbnail)
+  //       setVideoEnded(false)
+  //     }
+  //   })()
+  // }, [courseSectionData, courseEntireData, location.pathname, courseId, navigate, sectionId, subSectionId])
+
+  // New Update
   useEffect(() => {
-    ;(async () => {
-      if (!courseSectionData.length) return
-      if (!courseId && !sectionId && !subSectionId) {
-        navigate(`/dashboard/enrolled-courses`)
-      } else {
-        // console.log("courseSectionData", courseSectionData)
-        const filteredData = courseSectionData.filter(
-          (course) => course._id === sectionId
-        )
-        // console.log("filteredData", filteredData)
-        const filteredVideoData = filteredData?.[0]?.subSection.filter(
-          (data) => data._id === subSectionId
-        )
-        // console.log("filteredVideoData", filteredVideoData)
-        setVideoData(filteredVideoData[0])
-        setPreviewSource(courseEntireData.thumbnail)
-        setVideoEnded(false)
+    (async () => {
+      // if course data not loaded, stop
+      if (!courseSectionData?.length) return;
+
+      // check URL params validity
+      if (!courseId || !sectionId || !subSectionId) {
+        navigate(`/dashboard/enrolled-courses`);
+        return;
       }
-    })()
-  }, [courseSectionData, courseEntireData, location.pathname, courseId, navigate, sectionId, subSectionId])
+
+      // find the matching section
+      const section = courseSectionData.find(
+        (course) => course._id === sectionId
+      );
+
+      // if no matching section found
+      if (!section || !section.subSection?.length) {
+        console.warn("Section not found or empty:", sectionId);
+        navigate(`/dashboard/enrolled-courses`);
+        return;
+      }
+
+      // find the matching subSection
+      const video = section.subSection.find(
+        (data) => data._id === subSectionId
+      );
+
+      // if no video found
+      if (!video) {
+        console.warn("Subsection not found:", subSectionId);
+        navigate(`/dashboard/enrolled-courses`);
+        return;
+      }
+
+      // update video data
+      setVideoData(video);
+      setPreviewSource(courseEntireData?.thumbnail || "");
+      setVideoEnded(false);
+    })();
+  }, [
+    courseSectionData,
+    courseEntireData,
+    location.pathname,
+    courseId,
+    navigate,
+    sectionId,
+    subSectionId,
+  ]);
+
 
   // check if the lecture is the first video of the course
   const isFirstVideo = () => {

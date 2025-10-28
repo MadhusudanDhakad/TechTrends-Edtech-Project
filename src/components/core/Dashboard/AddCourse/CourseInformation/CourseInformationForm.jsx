@@ -82,59 +82,59 @@ export default function CourseInformationForm() {
   const onSubmit = async (data) => {
     // console.log(data)
 
+    //new update
     if (editCourse) {
-      // const currentValues = getValues()
-      // console.log("changes after editing form values:", currentValues)
-      // console.log("now course:", course)
-      // console.log("Has Form Changed:", isFormUpdated())
+      if (!course?._id) {
+        toast.error("Course data missing. Please refresh and try again.")
+        return
+      }
+
       if (isFormUpdated()) {
-        const currentValues = getValues()
         const formData = new FormData()
-        // console.log(data)
         formData.append("courseId", course._id)
-        if (currentValues.courseTitle !== course.courseName) {
+
+        if (data.courseTitle !== course.courseName)
           formData.append("courseName", data.courseTitle)
-        }
-        if (currentValues.courseShortDesc !== course.courseDescription) {
+
+        if (data.courseShortDesc !== course.courseDescription)
           formData.append("courseDescription", data.courseShortDesc)
-        }
-        if (currentValues.coursePrice !== course.price) {
+
+        if (data.coursePrice !== course.price)
           formData.append("price", data.coursePrice)
-        }
-        if (currentValues.courseTags.toString() !== course.tag.toString()) {
+
+        if (JSON.stringify(data.courseTags) !== JSON.stringify(course.tag))
           formData.append("tag", JSON.stringify(data.courseTags))
-        }
-        if (currentValues.courseBenefits !== course.whatYouWillLearn) {
+
+        if (data.courseBenefits !== course.whatYouWillLearn)
           formData.append("whatYouWillLearn", data.courseBenefits)
-        }
-        if (currentValues.courseCategory._id !== course.category._id) {
+
+        if (data.courseCategory?._id !== course.category?._id)
           formData.append("category", data.courseCategory)
-        }
+
         if (
-          currentValues.courseRequirements.toString() !==
-          course.instructions.toString()
-        ) {
-          formData.append(
-            "instructions",
-            JSON.stringify(data.courseRequirements)
-          )
-        }
-        if (currentValues.courseImage !== course.thumbnail) {
+          JSON.stringify(data.courseRequirements) !==
+          JSON.stringify(course.instructions)
+        )
+          formData.append("instructions", JSON.stringify(data.courseRequirements))
+
+        if (data.courseImage !== course.thumbnail)
           formData.append("thumbnailImage", data.courseImage)
-        }
-        // console.log("Edit Form data: ", formData)
+
         setLoading(true)
         const result = await editCourseDetails(formData, token)
         setLoading(false)
+
         if (result) {
-          dispatch(setStep(2))
           dispatch(setCourse(result))
+          dispatch(setStep(2))
+          toast.success("Course updated successfully!")
         }
       } else {
         toast.error("No changes made to the form")
       }
       return
     }
+
 
     console.log("courseImage: ", data.courseImage);
 
@@ -160,8 +160,6 @@ export default function CourseInformationForm() {
     }
     setLoading(false)
     
-    console.log("courseImage: ", data.courseImage);
-
     
     for (let pair of formData.entries()) {
       console.log(pair[0], pair[1])

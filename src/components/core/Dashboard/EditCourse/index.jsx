@@ -17,17 +17,38 @@ export default function EditCourse() {
   const { token } = useSelector((state) => state.auth)
 
   useEffect(() => {
+    // new update
+    console.log("EditCourse Mounted for courseId: ", courseId)
+    if (!courseId) {
+      console.log("courseId missing from URL")
+      return
+    }
+
     ;(async () => {
       setLoading(true)
-      const result = await getFullDetailsOfCourse(courseId, token)
-      if (result?.courseDetails) {
-        dispatch(setEditCourse(true))
-        dispatch(setCourse(result?.courseDetails))
+      // new Update
+      try {
+        const result = await getFullDetailsOfCourse(courseId, token)
+        console.log("Api result from getFullDetailsOfCourse: ", result)
+        
+        if (result?.courseDetails) {
+          console.log("Setting course: ", result.courseDetails.courseName)
+          dispatch(setEditCourse(true))
+          dispatch(setCourse(result.courseDetails))
+        } else {
+          console.error("Course not found or unauthorized access");
+        }
+      } catch (err) {
+        console.error("getFullDetailsOfCourse failed: ", err)
       }
       setLoading(false)
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [courseId])
+  
+  useEffect(() => {
+    console.log("Redux course value: ", course)
+  }, [course])
 
   if (loading) {
     return (
@@ -43,19 +64,12 @@ export default function EditCourse() {
         Edit Course
       </h1>
       <div className="mx-auto max-w-[600px]">
-        {/* {course ? (
+        {course ? (
           <RenderSteps />
         ) : (
           <p className="mt-14 text-center text-3xl font-semibold text-richblack-100">
             Course not found
           </p>
-        )} */}
-        {course ? (
-          <p className="mt-14 text-center text-3xl font-semibold text-richblack-100">
-            Course not found
-          </p>
-        ): (
-          <RenderSteps />
         )}
       </div>
     </div>

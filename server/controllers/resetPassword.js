@@ -6,8 +6,11 @@ const crypto = require("crypto")
 exports.resetPasswordToken = async (req, res) => {
   try {
     const email = req.body.email
+    console.log("Incoming reset password request for: ", email);
+
     const user = await User.findOne({ email: email })
     if (!user) {
+      console.log("User not found for email: ", email);
       return res.json({
         success: false,
         message: `This Email: ${email} is not Registered With Us Enter a Valid Email `,
@@ -28,7 +31,7 @@ exports.resetPasswordToken = async (req, res) => {
     console.log("DETAILS", updatedDetails)
 
     // const url = `http://localhost:4000/update-password/${token}`
-    const url = `https://techtrends-edtech-project.vercel.app/update-password/${token}`
+    // const url = `https://techtrends-edtech-project.vercel.app/update-password/${token}`
 
     
     // Send reset email
@@ -88,23 +91,26 @@ exports.resetPassword = async (req, res) => {
     }
 
     if (confirmPassword !== password) {
-      return res.json({
+      return res.status(400).json({
         success: false,
         message: "Password and Confirm Password Does not Match",
-      })
+      });
     }
+
+
     const userDetails = await User.findOne({ token: token })
     if (!userDetails) {
-      return res.json({
+      return res.status(400).json({
         success: false,
         message: "Token is Invalid",
-      })
+      });
     }
+
     if (!(userDetails.resetPasswordExpires > Date.now())) {
       return res.status(403).json({
         success: false,
         message: `Token is Expired, Please Regenerate Your Token`,
-      })
+      });
     }
     // const encryptedPassword = await bcrypt.hash(password, 10)
     // await User.findOneAndUpdate(
@@ -123,8 +129,8 @@ exports.resetPassword = async (req, res) => {
     
     res.json({
       success: true,
-      message: `Password Reset Successful`,
-    })
+      message: "Password reset successful.",
+    });
   } catch (error) {
     return res.json({
       error: error.message,

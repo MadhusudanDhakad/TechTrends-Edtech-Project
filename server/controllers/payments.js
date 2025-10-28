@@ -12,15 +12,37 @@ const CourseProgress = require("../models/CourseProgress")
 
 // Capture the payment and initiate the Razorpay order
 exports.capturePayment = async (req, res) => {
+
+  console.log("capturePayment called with body:", req.body)
+  console.log("User from token:", req.user)
+
+
   const { courses } = req.body
   const userId = req.user.id
-  if (courses.length === 0) {
-    return res.json({ success: false, message: "Please Provide Course ID" })
+
+  if (!courses || courses.length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: "Please provide at least one course ID",
+    })
   }
+  console.log("course Id: ", courses)
+
+  
+  // new update 
+  if (!userId) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized: user ID not found.",
+    });
+  }
+  
+  console.log("Requested courses: ", courses);
 
   let total_amount = 0
 
   for (const course_id of courses) {
+    console.log("course Id: ", course_id)
     let course
     try {
       // Find the course by its ID
@@ -52,17 +74,19 @@ exports.capturePayment = async (req, res) => {
   const options = {
     amount: total_amount * 100,
     currency: "INR",
-    receipt: Math.random(Date.now()).toString(),
+    // receipt: Math.random(Date.now()).toString(),
+    //new update
+    receipt: `receipt_${Date.now()}`,
   }
 
   try {
     // Initiate the payment using Razorpay
     const paymentResponse = await instance.orders.create(options)
-    console.log(paymentResponse)
+    console.log("Razorpay Order Created: ", paymentResponse)
     res.json({
       success: true,
       data: paymentResponse,
-    })
+    });
   } catch (error) {
     console.log(error)
     res

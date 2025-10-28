@@ -116,7 +116,7 @@ export default function SidebarLink({ link, iconName, onClick }) {
               to={`/catalog/${subLink.name.split(" ").join("-").toLowerCase()}`}
               onClick={onClick} // close sidebar on mobile if needed
               className="px-4 py-1 text-sm text-richblack-300 hover:bg-richblack-700 rounded"
-            >
+              >
               {subLink.name}
             </NavLink>
           ))}
