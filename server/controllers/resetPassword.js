@@ -23,22 +23,49 @@ exports.resetPasswordToken = async (req, res) => {
       },
       { new: true }
     )
+    console.log("Reset token genereated for: ", updatedDetails.email);
+    console.log("Token: ", token);
     console.log("DETAILS", updatedDetails)
 
     // const url = `http://localhost:4000/update-password/${token}`
     const url = `https://techtrends-edtech-project.vercel.app/update-password/${token}`
 
-    await mailSender(
+    
+    // Send reset email
+    const emailResponse = await mailSender(
       email,
-      "Password Reset",
-      `Your Link for email verification is ${url}. Please click this url to reset your password.`
-    )
+      "Password Reset Request",
+      `
+        <h2>Password Reset Request</h2>
+        <p>Hi ${user.firstName || "User"},</p>
+        <p>Click the link below to reset your password:</p>
+        <a href="${url}" target="_blank" 
+          style="display:inline-block;background:#FFD60A;color:#000;padding:10px 20px;text-decoration:none;border-radius:6px;font-weight:600;">
+          Reset Password
+        </a>
+        <p>This link will expire in 1 hour.</p>
+        <br/>
+        <p>Regards,<br/>TechTrends Learning Team</p>
+      `
+    );
 
-    res.json({
+    console.log("📧 Email sent:", emailResponse);
+
+    // New Update -> Handle possible resend error shape
+    if (emailResponse.error || emailResponse.name == "AxiosError") {
+      console.error("Resend email error: ", emailResponse);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to send reset email. Please try again.",
+      });
+    }
+
+
+    return res.status(200).json({
       success: true,
       message:
-        "Email Sent Successfully, Please Check Your Email to Continue Further",
-    })
+        "Email sent successfully. Please check your inbox to continue resetting your password.",
+    });
   } catch (error) {
     return res.json({
       error: error.message,
@@ -51,6 +78,14 @@ exports.resetPasswordToken = async (req, res) => {
 exports.resetPassword = async (req, res) => {
   try {
     const { password, confirmPassword, token } = req.body
+
+        // validate input
+    if (!password || !confirmPassword || !token) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required.",
+      });
+    }
 
     if (confirmPassword !== password) {
       return res.json({
@@ -71,12 +106,21 @@ exports.resetPassword = async (req, res) => {
         message: `Token is Expired, Please Regenerate Your Token`,
       })
     }
-    const encryptedPassword = await bcrypt.hash(password, 10)
-    await User.findOneAndUpdate(
-      { token: token },
-      { password: encryptedPassword },
-      { new: true }
-    )
+    // const encryptedPassword = await bcrypt.hash(password, 10)
+    // await User.findOneAndUpdate(
+    //   { token: token },
+    //   { password: encryptedPassword },
+    //   { new: true }
+    // )
+
+    // New Update
+    // Hash and update password
+    const encryptedPassword = await bcrypt.hash(password, 10);
+    userDetails.password = encryptedPassword;
+    userDetails.token = undefined;
+    userDetails.resetPasswordExpires = undefined;
+    await userDetails.save();
+    
     res.json({
       success: true,
       message: `Password Reset Successful`,
