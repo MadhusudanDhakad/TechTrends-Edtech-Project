@@ -3,6 +3,15 @@
 require("dotenv").config({ path: __dirname + "/../.env" });
 const { Resend } = require("resend");
 
+// ✅ Polyfill fetch + Headers for Node <18
+if (typeof global.Headers === "undefined") {
+  const fetch = require("node-fetch");
+  global.fetch = fetch;
+  global.Headers = fetch.Headers;
+}
+
+
+
 console.log("Loaded RESEND_API_KEY:", process.env.RESEND_API_KEY ? "✅ Exists" : "❌ Missing");
 
 const resend = new Resend(process.env.RESEND_API_KEY);
