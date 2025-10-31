@@ -3,12 +3,7 @@
 require("dotenv").config({ path: __dirname + "/../.env" });
 const { Resend } = require("resend");
 
-<<<<<<< Updated upstream
 // ✅ Polyfill fetch + Headers for Node <18
-=======
-
-// Polyfill fetch + Headers for Node <18
->>>>>>> Stashed changes
 if (typeof global.Headers === "undefined") {
   const fetch = require("node-fetch");
   global.fetch = fetch;
