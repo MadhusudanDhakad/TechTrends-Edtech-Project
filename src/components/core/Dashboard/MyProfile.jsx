@@ -142,7 +142,7 @@ export default function MyProfile() {
       {/* Profile Header */}
       <div className="flex flex-col md:flex-row items-center md:justify-between rounded-md border border-richblack-700 bg-richblack-800 p-4 sm:p-8 md:p-12 gap-4 md:gap-0">
        
-        <div className="hidden flex gap-4 md:gap-4 w-full md:w-auto">
+        <div className="hidden gap-4 md:gap-4 w-full md:w-auto">
           <img
             src={user?.image}
             alt={`profile-${user?.firstName}`}

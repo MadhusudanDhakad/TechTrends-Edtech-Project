@@ -3,6 +3,7 @@ import { useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { VscSignOut, VscMenu, VscClose } from "react-icons/vsc"
+import { IoIosArrowBack } from "react-icons/io"
 
 
 import { sidebarLinks } from "../../../data/dashboard-links"
@@ -79,12 +80,19 @@ export default function Sidebar() {
   return (
     <>
       {/* Hamburger for mobile */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="md:hidden fixed top-16 left-4 z-[1000] text-2xl text-richblack-25"
-      >
-        {isOpen ? <VscClose /> : <VscMenu />}
-      </button>
+
+       <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="md:hidden fixed top-16 left-4 z-[1000] text-2xl text-richblack-25"
+        >
+          <IoIosArrowBack
+            size={28}
+            className={`${isOpen ? "rotate-180" : "rotate-0"} transition-transform duration-300`}
+            />
+            {/* {isOpen ? <VscClose /> : <VscMenu />} */}
+        </button>
+
+
 
       {/* <div className="fixed top-4 left-4 md:static z-[1001"> 
         <img src={logo} alt="logo" className="w-32 md:w-auto" />
