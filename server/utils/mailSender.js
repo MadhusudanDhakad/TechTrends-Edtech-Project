@@ -3,7 +3,12 @@
 require("dotenv").config({ path: __dirname + "/../.env" });
 const { Resend } = require("resend");
 
+<<<<<<< Updated upstream
 // ✅ Polyfill fetch + Headers for Node <18
+=======
+
+// Polyfill fetch + Headers for Node <18
+>>>>>>> Stashed changes
 if (typeof global.Headers === "undefined") {
   const fetch = require("node-fetch");
   global.fetch = fetch;
@@ -42,7 +47,7 @@ const mailSender = async (email, title, body) => {
       subject: `${title}`,
       html: `${body}`,
     });
-    console.log("✅ Email sent successfully:", response);
+    console.log("Email sent successfully:", response);
     return response;
   } catch (error) {
     console.log(error.message)
