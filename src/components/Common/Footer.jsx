@@ -172,7 +172,7 @@ const Footer = () => {
             })}
           </div>
 
-          <div className="text-center">Made by ❤️ Madhusudan Narwadiya © 2024 TechTrends Learning</div>
+          <div className="text-center">Made by Madhusudan Narwadiya © 2024 TechTrends Learning</div>
         </div>
       </div>
     </div>
