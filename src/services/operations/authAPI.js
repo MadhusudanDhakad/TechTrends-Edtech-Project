@@ -172,13 +172,11 @@ export function resetPassword(password, confirmPassword, token, navigate) {
       // return { success: true, data: response.data }
     } catch (err) {
       console.log("RESETPASSWORD ERROR............", err)
-
       // new update
       const msg = err?.response?.data?.message || err?.message || "Something went wrong while resetting password"
-
       toast.error(msg)
       // new update
-      // return { success: false, error: msg }
+      return { success: false, error: msg }
     } finally {
       // new update
         toast.dismiss(toastId)
