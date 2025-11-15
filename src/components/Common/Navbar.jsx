@@ -62,9 +62,9 @@ function Navbar() {
   }
 
   return (
-    <div
+   <div
       className={`flex h-14 items-center justify-center border-b-[1px] border-b-richblack-700 ${
-        location.pathname !== "/" ? "bg-richblack-800" : "bg-richblack-700"
+        location.pathname !== "/" ? "bg-[oklch(20.8% 0.042 265.755)]" : "bg-[oklch(12.9% 0.042 264.695)]"
       } transition-all duration-200`}
     >
       <div className="flex w-11/12 max-w-maxContent items-center justify-between">
