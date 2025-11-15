@@ -40,7 +40,7 @@ export default function Instructor() {
   )
 
   const isMobile = useIsMobile();
-  const count = isMobile ? 2 : 3;
+  const count = isMobile ? 1 : 3;
 
   return (
     <div>
