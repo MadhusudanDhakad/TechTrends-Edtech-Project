@@ -6,6 +6,8 @@ import { fetchInstructorCourses } from "../../../services/operations/courseDetai
 import { getInstructorData } from "../../../services/operations/profileAPI"
 import InstructorChart from "./InstructorDashboard/InstructorChart"
 
+import useIsMobile from "../../../hooks/useIsMobile"
+
 export default function Instructor() {
   const { token } = useSelector((state) => state.auth)
   const { user } = useSelector((state) => state.profile)
@@ -36,6 +38,9 @@ export default function Instructor() {
     (acc, curr) => acc + curr.totalStudentsEnrolled,
     0
   )
+
+  const isMobile = useIsMobile();
+  const count = isMobile ? 2 : 3;
 
   return (
     <div>
@@ -99,8 +104,8 @@ export default function Instructor() {
               </Link>
             </div>
             <div className="my-4 flex items-start space-x-6">
-              {courses.slice(0, 3).map((course) => (
-                <div key={course._id} className="w-1/3">
+              {courses.slice(0, count).map((course) => (
+                <div key={course._id} className="w-1/2 md:w-1/3">
                   <img
                     src={course.thumbnail}
                     alt={course.courseName}
@@ -110,11 +115,11 @@ export default function Instructor() {
                     <p className="text-sm font-medium text-richblack-50">
                       {course.courseName}
                     </p>
-                    <div className="mt-1 flex items-center space-x-2">
+                    <div className="mt-1 flex flex-col md:flex-row gap-2 space-x-2">
                       <p className="text-xs font-medium text-richblack-300">
                         {course.studentsEnroled.length} students
                       </p>
-                      <p className="text-xs font-medium text-richblack-300">
+                      <p className="hidden text-xs font-medium text-richblack-300">
                         |
                       </p>
                       <p className="text-xs font-medium text-richblack-300">
